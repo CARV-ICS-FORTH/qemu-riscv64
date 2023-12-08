@@ -1,0 +1,13 @@
+images:
+  launcher: carvicsforth/qemu-riscv64-launcher:1.0.0
+  console: carvicsforth/qemu-riscv64-console:1.0.0
+  data: carvicsforth/qemu-riscv64-ubuntu-22.04:1.0.0
+
+service:
+  type: LoadBalancer
+  port: 8080
+
+cpu:
+  features:
+  count: 2
+memory: 2048

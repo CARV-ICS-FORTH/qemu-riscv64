@@ -1,0 +1,7 @@
+apiVersion: v2
+name: qemu-riscv64
+description: Easy deployment of RISC-V QEMU instances on Kubernetes
+type: application
+version: 0.0.0
+sources:
+- https://github.com/CARV-ICS-FORTH/qemu-riscv64

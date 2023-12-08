@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "qemu-riscv64.fullname" . }}
+  labels:
+    {{- include "qemu-riscv64.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+  - name: qemu-console
+    port: {{ .Values.service.port }}
+    targetPort: 8080
+  selector:
+    {{- include "qemu-riscv64.selectorLabels" . | nindent 4 }}
