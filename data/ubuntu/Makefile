@@ -9,7 +9,7 @@ IMAGE_NAME=$(REGISTRY_NAME)/qemu-riscv64-ubuntu:$(VERSION)
 all: container
 
 container:
-    docker build -t $(IMAGE_NAME) .
+	docker build -t $(IMAGE_NAME) .
 
 container-push: container
-    docker buildx build --platform linux/amd64,linux/arm64 --push -t $(IMAGE_NAME) .
+	docker buildx build --platform linux/amd64,linux/arm64 --push -t $(IMAGE_NAME) .
