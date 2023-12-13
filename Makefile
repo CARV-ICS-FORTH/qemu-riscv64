@@ -14,7 +14,7 @@ console:
 	(cd console && docker build -t $(REGISTRY_NAME)/qemu-riscv64-console:$(VERSION) .)
 
 data:
-	(cd data && for i in `ls`; do (cd $$i && docker build -t $(REGISTRY_NAME)/qemu-riscv64-$$i:$(VERSION) .); done)
+	(cd data && for i in `ls`; do (cd $$i && make container); done)
 
 launcher-push:
 	(cd launcher && docker buildx build --platform linux/amd64,linux/arm64 --push -t $(REGISTRY_NAME)/qemu-riscv64-launcher:$(VERSION) .)
@@ -23,7 +23,7 @@ console-push:
 	(cd console && docker buildx build --platform linux/amd64,linux/arm64 --push -t $(REGISTRY_NAME)/qemu-riscv64-console:$(VERSION) .)
 
 data-push:
-	(cd data && for i in `ls`; do (cd $$i && docker buildx build --platform linux/amd64,linux/arm64 --push -t $(REGISTRY_NAME)/qemu-riscv64-$$i:$(VERSION) .); done)
+	(cd data && for i in `ls`; do (cd $$i && make container-push); done)
 
 containers: launcher console data
 
