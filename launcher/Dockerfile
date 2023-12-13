@@ -14,6 +14,7 @@ RUN apt-get update && \
 ENV VM_CPU_FEATURES=
 ENV VM_CPU_COUNT 4
 ENV VM_MEMORY 2048
+ENV VM_APPEND=
 ENV VM_BIOS /usr/lib/riscv64-linux-gnu/opensbi/generic/fw_jump.elf
 ENV VM_KERNEL /usr/lib/u-boot/qemu-riscv64_smode/uboot.elf
 ENV VM_DRIVE /data/disk.img

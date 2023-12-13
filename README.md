@@ -21,16 +21,32 @@ If running Kubernetes with [minikube](https://minikube.sigs.k8s.io/), the above 
 
 The table below lists all available options (the current version is set in the `Makefile`):
 
-| Variable          | Default                                            | Notes                                    |
-|-------------------|----------------------------------------------------|------------------------------------------|
-| `images.launcher` | `carvicsforth/qemu-riscv64-launcher:<version>`     |                                          |
-| `images.console`  | `carvicsforth/qemu-riscv64-console:<version>`      |                                          |
-| `images.data`     | `carvicsforth/qemu-riscv64-ubuntu-22.04:<version>` | Use for custom files, kernel, and BIOS   |
-| `service.type`    | `LoadBalancer`                                     |                                          |
-| `service.port`    | `8080`                                             |                                          |
-| `cpu.features`    |                                                    | Can be overriden by the `data` image     |
-| `cpu.count`       | `2`                                                | Also sets resource request in deployment |
-| `memory`          | `2048`                                             | Also sets resource request in deployment |
+| Variable          | Default                                            | Notes                                                |
+|-------------------|----------------------------------------------------|------------------------------------------------------|
+| `images.launcher` | `carvicsforth/qemu-riscv64-launcher:<version>`     |                                                      |
+| `images.console`  | `carvicsforth/qemu-riscv64-console:<version>`      |                                                      |
+| `images.data`     | `carvicsforth/qemu-riscv64-ubuntu:22.04-1`         | Use for custom files, kernel, and BIOS               |
+| `service.type`    | `LoadBalancer`                                     |                                                      |
+| `service.port`    | `8080`                                             |                                                      |
+| `cpu.features`    |                                                    | Can be overriden by the `data` image                 |
+| `cpu.count`       | `2`                                                | Also sets resource request in deployment             |
+| `memory`          | `2048`                                             | Also sets resource request in deployment             |
+| `append`          |                                                    | Kernel options. Can be overriden by the `data` image |
+
+Available `data` images:
+
+| Image                                           | Notes                                                |
+|-------------------------------------------------|------------------------------------------------------|
+| `carvicsforth/qemu-riscv64-ubuntu:22.04-1`      | Standard Ubuntu image (login: `ubuntu`/`ubuntu`)     |
+| `carvicsforth/qemu-riscv64-buildroot:00709af-1` | Custom built image, uses RVV1.0.0 (login: `root`/``) |
+
+To images set the CPU specifications they need, as well as custom kernel options.
+To run the custom [Buildroot](https://buildroot.org) image:
+
+```bash
+helm install myvm ./chart/qemu-riscv64 \
+    --set images.data="carvicsforth/qemu-riscv64-buildroot:00709af-1"
+```
 
 ## Architecture
 
@@ -42,14 +58,14 @@ The root filesystem used by QEMU is also packaged up in a container image (which
 
 ## Building images
 
-Container images are [available](https://hub.docker.com/r/carvicsforth/).
+Container images are [available](https://hub.docker.com/r/carvicsforth/) for both `amd64` and `arm64` architectures.
 
 To build your own locally, set the `REGISTRY` variable and run:
 ```bash
 REGISTRY=<Docker Hub username> make container
 ```
 
-The image tag is controlled via the `VERSION` variable.
+The image tag for the `launcher` and `console` images is controlled via the `VERSION` variable.
 
 ## Acknowledgements
 

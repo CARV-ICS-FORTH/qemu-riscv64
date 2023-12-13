@@ -17,6 +17,7 @@ spec:
       initContainers:
       - name: data-bin-provider
         image: busybox:1.36.1-musl
+        imagePullPolicy: IfNotPresent
         command:
         - "/bin/sh"
         args:
@@ -27,6 +28,7 @@ spec:
           name: data-bin
       - name: data-provider
         image: {{ .Values.images.data }}
+        imagePullPolicy: IfNotPresent
         command:
         - "/bin/sh"
         args:
@@ -40,9 +42,10 @@ spec:
       containers:
       - name: qemu-launcher
         image: {{ .Values.images.launcher }}
+        imagePullPolicy: IfNotPresent
         resources:
           requests:
-            cpu: {{ .Values.cpu_count }}
+            cpu: {{ .Values.cpu.count }}
             memory: {{ .Values.memory }}
         env:
         - name: VM_CPU_FEATURES
@@ -51,6 +54,8 @@ spec:
           value: "{{ .Values.cpu.count }}"
         - name: VM_MEMORY
           value: "{{ .Values.memory }}"
+        - name: VM_APPEND
+          value: "{{ .Values.append }}"
         ports:
         - containerPort: 10023
           name: qemu-telnet
@@ -59,6 +64,7 @@ spec:
           name: data
       - name: qemu-console
         image: {{ .Values.images.console }}
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
           name: qemu-console

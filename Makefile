@@ -1,7 +1,7 @@
 SHELL=/bin/bash
 
 REGISTRY_NAME?=carvicsforth
-VERSION?=1.0.0
+VERSION?=1.1.0
 
 .PHONY: all launcher console data launcher-push console-push data-push containers containers-push
 
@@ -25,6 +25,6 @@ console-push:
 data-push:
 	(cd data && for i in `ls`; do (cd $$i && make container-push); done)
 
-containers: launcher console data
+containers: launcher console #data
 
-containers-push: launcher-push console-push data-push
+containers-push: launcher-push console-push #data-push
