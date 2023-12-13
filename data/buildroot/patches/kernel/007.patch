@@ -1,0 +1,76 @@
+Add vector state context struct in struct thread and asm-offsets.c
+definitions.
+
+The vector registers will be saved in datap pointer of __riscv_v_state. It
+will be dynamically allocated in kernel space. It will be put right after
+the __riscv_v_state data structure in user space.
+
+Co-developed-by: Vincent Chen <vincent.chen@sifive.com>
+Signed-off-by: Vincent Chen <vincent.chen@sifive.com>
+Signed-off-by: Greentime Hu <greentime.hu@sifive.com>
+---
+ arch/riscv/include/asm/processor.h   |  1 +
+ arch/riscv/include/uapi/asm/ptrace.h | 17 +++++++++++++++++
+ arch/riscv/kernel/asm-offsets.c      |  6 ++++++
+ 3 files changed, 24 insertions(+)
+
+diff --git a/arch/riscv/include/asm/processor.h b/arch/riscv/include/asm/processor.h
+index 0749924d9e55..91f1c318328e 100644
+--- a/arch/riscv/include/asm/processor.h
++++ b/arch/riscv/include/asm/processor.h
+@@ -35,6 +35,7 @@ struct thread_struct {
+ 	unsigned long s[12];	/* s[0]: frame pointer */
+ 	struct __riscv_d_ext_state fstate;
+ 	unsigned long bad_cause;
++	struct __riscv_v_state vstate;
+ };
+ 
+ /* Whitelist the fstate from the task_struct for hardened usercopy */
+diff --git a/arch/riscv/include/uapi/asm/ptrace.h b/arch/riscv/include/uapi/asm/ptrace.h
+index 882547f6bd5c..6ee1ca2edfa7 100644
+--- a/arch/riscv/include/uapi/asm/ptrace.h
++++ b/arch/riscv/include/uapi/asm/ptrace.h
+@@ -77,6 +77,23 @@ union __riscv_fp_state {
+ 	struct __riscv_q_ext_state q;
+ };
+ 
++struct __riscv_v_state {
++	unsigned long vstart;
++	unsigned long vl;
++	unsigned long vtype;
++	unsigned long vcsr;
++	void *datap;
++	/*
++	 * In signal handler, datap will be set a correct user stack offset
++	 * and vector registers will be copied to the address of datap
++	 * pointer.
++	 *
++	 * In ptrace syscall, datap will be set to zero and the vector
++	 * registers will be copied to the address right after this
++	 * structure.
++	 */
++};
++
+ #endif /* __ASSEMBLY__ */
+ 
+ #endif /* _UAPI_ASM_RISCV_PTRACE_H */
+diff --git a/arch/riscv/kernel/asm-offsets.c b/arch/riscv/kernel/asm-offsets.c
+index df9444397908..37e3e6a8d877 100644
+--- a/arch/riscv/kernel/asm-offsets.c
++++ b/arch/riscv/kernel/asm-offsets.c
+@@ -75,6 +75,12 @@ void asm_offsets(void)
+ 	OFFSET(TSK_STACK_CANARY, task_struct, stack_canary);
+ #endif
+ 
++	OFFSET(RISCV_V_STATE_VSTART, __riscv_v_state, vstart);
++	OFFSET(RISCV_V_STATE_VL, __riscv_v_state, vl);
++	OFFSET(RISCV_V_STATE_VTYPE, __riscv_v_state, vtype);
++	OFFSET(RISCV_V_STATE_VCSR, __riscv_v_state, vcsr);
++	OFFSET(RISCV_V_STATE_DATAP, __riscv_v_state, datap);
++
+ 	DEFINE(PT_SIZE, sizeof(struct pt_regs));
+ 	OFFSET(PT_EPC, pt_regs, epc);
+ 	OFFSET(PT_RA, pt_regs, ra);
+-- 
+2.17.1
+

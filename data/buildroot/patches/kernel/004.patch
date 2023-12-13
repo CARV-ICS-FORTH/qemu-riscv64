@@ -1,0 +1,48 @@
+From: Guo Ren <guoren@linux.alibaba.com>
+
+This patch adds a new config option which could enable assembler's
+vector feature.
+
+Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
+Co-developed-by: Greentime Hu <greentime.hu@sifive.com>
+Signed-off-by: Greentime Hu <greentime.hu@sifive.com>
+---
+ arch/riscv/Kconfig  | 10 ++++++++++
+ arch/riscv/Makefile |  1 +
+ 2 files changed, 11 insertions(+)
+
+diff --git a/arch/riscv/Kconfig b/arch/riscv/Kconfig
+index 00fd9c548f26..f54f37cc746b 100644
+--- a/arch/riscv/Kconfig
++++ b/arch/riscv/Kconfig
+@@ -343,6 +343,16 @@ config FPU
+ 
+ 	  If you don't know what to do here, say Y.
+ 
++config VECTOR
++	bool "VECTOR support"
++	depends on GCC_VERSION >= 120000 || CLANG_VERSION >= 130000
++	default y
++	help
++	  Say N here if you want to disable all vector related procedure
++	  in the kernel.
++
++	  If you don't know what to do here, say Y.
++
+ endmenu
+ 
+ menu "Kernel features"
+diff --git a/arch/riscv/Makefile b/arch/riscv/Makefile
+index 7d81102cffd4..1f19bdac6767 100644
+--- a/arch/riscv/Makefile
++++ b/arch/riscv/Makefile
+@@ -50,6 +50,7 @@ riscv-march-$(CONFIG_ARCH_RV32I)	:= rv32ima
+ riscv-march-$(CONFIG_ARCH_RV64I)	:= rv64ima
+ riscv-march-$(CONFIG_FPU)		:= $(riscv-march-y)fd
+ riscv-march-$(CONFIG_RISCV_ISA_C)	:= $(riscv-march-y)c
++riscv-march-$(CONFIG_VECTOR)		:= $(riscv-march-y)v
+ 
+ # Newer binutils versions default to ISA spec version 20191213 which moves some
+ # instructions from the I extension to the Zicsr and Zifencei extensions.
+-- 
+2.17.1

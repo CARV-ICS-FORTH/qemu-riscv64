@@ -1,0 +1,143 @@
+This patch adds ptrace support for riscv vector. The vector registers will
+be saved in datap pointer of __riscv_v_state. This pointer will be set
+right after the __riscv_v_state data structure then it will be put in ubuf
+for ptrace system call to get or set. It will check if the datap got from
+ubuf is set to the correct address or not when the ptrace system call is
+trying to set the vector registers.
+
+Co-developed-by: Vincent Chen <vincent.chen@sifive.com>
+Signed-off-by: Vincent Chen <vincent.chen@sifive.com>
+Signed-off-by: Greentime Hu <greentime.hu@sifive.com>
+---
+ arch/riscv/include/uapi/asm/ptrace.h |  6 +++
+ arch/riscv/kernel/ptrace.c           | 71 ++++++++++++++++++++++++++++
+ include/uapi/linux/elf.h             |  1 +
+ 3 files changed, 78 insertions(+)
+
+diff --git a/arch/riscv/include/uapi/asm/ptrace.h b/arch/riscv/include/uapi/asm/ptrace.h
+index 6ee1ca2edfa7..2491875be80d 100644
+--- a/arch/riscv/include/uapi/asm/ptrace.h
++++ b/arch/riscv/include/uapi/asm/ptrace.h
+@@ -94,6 +94,12 @@ struct __riscv_v_state {
+ 	 */
+ };
+ 
++/*
++ * According to spec: The number of bits in a single vector register,
++ * VLEN >= ELEN, which must be a power of 2, and must be no greater than
++ * 2^16 = 65536bits = 8192bytes
++ */
++#define RISCV_MAX_VLENB (8192)
+ #endif /* __ASSEMBLY__ */
+ 
+ #endif /* _UAPI_ASM_RISCV_PTRACE_H */
+diff --git a/arch/riscv/kernel/ptrace.c b/arch/riscv/kernel/ptrace.c
+index 793c7da0554b..6f5d88220c84 100644
+--- a/arch/riscv/kernel/ptrace.c
++++ b/arch/riscv/kernel/ptrace.c
+@@ -26,6 +26,9 @@ enum riscv_regset {
+ #ifdef CONFIG_FPU
+ 	REGSET_F,
+ #endif
++#ifdef CONFIG_VECTOR
++	REGSET_V,
++#endif
+ };
+ 
+ static int riscv_gpr_get(struct task_struct *target,
+@@ -82,6 +85,64 @@ static int riscv_fpr_set(struct task_struct *target,
+ }
+ #endif
+ 
++#ifdef CONFIG_VECTOR
++static int riscv_vr_get(struct task_struct *target,
++			const struct user_regset *regset,
++			struct membuf to)
++{
++	struct __riscv_v_state *vstate = &target->thread.vstate;
++
++	/*
++	 * Ensure the vector registers have been saved to the memory before
++	 * copying them to membuf.
++	 */
++	if (target == current)
++		vstate_save(current, task_pt_regs(current));
++
++	/* Copy vector header from vstate. */
++	membuf_write(&to, vstate, RISCV_V_STATE_DATAP);
++	membuf_zero(&to, sizeof(void *));
++#if __riscv_xlen == 32
++	membuf_zero(&to, sizeof(__u32));
++#endif
++
++	/* Copy all the vector registers from vstate. */
++	return membuf_write(&to, vstate->datap, riscv_vsize);
++}
++
++static int riscv_vr_set(struct task_struct *target,
++			 const struct user_regset *regset,
++			 unsigned int pos, unsigned int count,
++			 const void *kbuf, const void __user *ubuf)
++{
++	int ret, size;
++	struct __riscv_v_state *vstate = &target->thread.vstate;
++
++	/* Copy rest of the vstate except datap and __padding. */
++	ret = user_regset_copyin(&pos, &count, &kbuf, &ubuf, vstate, 0,
++				 RISCV_V_STATE_DATAP);
++	if (unlikely(ret))
++		return ret;
++
++	/* Skip copy datap. */
++	size = sizeof(vstate->datap);
++	count -= size;
++	ubuf += size;
++#if __riscv_xlen == 32
++	/* Skip copy _padding. */
++	size = sizeof(vstate->__padding);
++	count -= size;
++	ubuf += size;
++#endif
++
++	/* Copy all the vector registers. */
++	pos = 0;
++	ret = user_regset_copyin(&pos, &count, &kbuf, &ubuf, vstate->datap,
++				 0, riscv_vsize);
++	return ret;
++}
++#endif
++
+ static const struct user_regset riscv_user_regset[] = {
+ 	[REGSET_X] = {
+ 		.core_note_type = NT_PRSTATUS,
+@@ -101,6 +162,16 @@ static const struct user_regset riscv_user_regset[] = {
+ 		.set = riscv_fpr_set,
+ 	},
+ #endif
++#ifdef CONFIG_VECTOR
++	[REGSET_V] = {
++		.core_note_type = NT_RISCV_VECTOR,
++		.align = 16,
++		.n = (32 * RISCV_MAX_VLENB)/sizeof(__u32),
++		.size = sizeof(__u32),
++		.regset_get = riscv_vr_get,
++		.set = riscv_vr_set,
++	},
++#endif
+ };
+ 
+ static const struct user_regset_view riscv_user_native_view = {
+diff --git a/include/uapi/linux/elf.h b/include/uapi/linux/elf.h
+index 7ce993e6786c..b4e8d7dde15b 100644
+--- a/include/uapi/linux/elf.h
++++ b/include/uapi/linux/elf.h
+@@ -436,6 +436,7 @@ typedef struct elf64_shdr {
+ #define NT_MIPS_DSP	0x800		/* MIPS DSP ASE registers */
+ #define NT_MIPS_FP_MODE	0x801		/* MIPS floating-point mode */
+ #define NT_MIPS_MSA	0x802		/* MIPS SIMD registers */
++#define NT_RISCV_VECTOR	0x900		/* RISC-V vector registers */
+ 
+ /* Note types with note name "GNU" */
+ #define NT_GNU_PROPERTY_TYPE_0	5
+-- 
+2.17.1
