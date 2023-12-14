@@ -1,6 +1,6 @@
 # RISC-V QEMU in Kubernetes
 
-This project provides an easy method for deploying RISC-V [QEMU](https://www.qemu.org) instances in [Kubernetes](https://kubernetes.io). Using [Helm](https://helm.sh), you can quickly configure and deploy a RISC-V VM and access its console through a web interface.
+This project provides an easy method for deploying RISC-V [QEMU](https://www.qemu.org) instances in [Kubernetes](https://kubernetes.io). Using [Helm](https://helm.sh), you can quickly configure and deploy a RISC-V VM and access its console through a web interface. The Helm chart is compatible with [Knot](https://github.com/CARV-ICS-FORTH/knot).
 
 ## Deploying
 
@@ -35,10 +35,10 @@ The table below lists all available options (the current version is set in the `
 
 Available `data` images:
 
-| Image                                           | Notes                                                |
-|-------------------------------------------------|------------------------------------------------------|
-| `carvicsforth/qemu-riscv64-ubuntu:22.04-1`      | Standard Ubuntu image (login: `ubuntu`/`ubuntu`)     |
-| `carvicsforth/qemu-riscv64-buildroot:00709af-1` | Custom built image, uses RVV1.0.0 (login: `root`/``) |
+| Image                                           | Notes                                              |
+|-------------------------------------------------|----------------------------------------------------|
+| `carvicsforth/qemu-riscv64-ubuntu:22.04-1`      | Standard Ubuntu image (login: `ubuntu`/`ubuntu`)   |
+| `carvicsforth/qemu-riscv64-buildroot:00709af-1` | Custom built image, uses RVV1.0.0 (login: `root`/) |
 
 To images set the CPU specifications they need, as well as custom kernel options.
 To run the custom [Buildroot](https://buildroot.org) image:

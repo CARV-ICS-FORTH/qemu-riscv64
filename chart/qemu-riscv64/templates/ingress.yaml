@@ -1,0 +1,21 @@
+{{- if .Values.knot.enabled }}
+{{- $fullName := include "qemu-riscv64.fullname" . -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $fullName }}
+  labels:
+    {{- include "qemu-riscv64.labels" . | nindent 4 }}
+spec:
+  rules:
+  - host: {{ .Values.knot.hostname | quote }}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ $fullName }}
+            port:
+              number: 8080
+{{- end }}

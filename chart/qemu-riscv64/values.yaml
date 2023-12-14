@@ -12,3 +12,27 @@ cpu:
   count: 2
 memory: 2048
 append:
+
+knot:
+  enabled: false
+  hostname: qemu-riscv64.example.com
+  metadata:
+    images.launcher:
+      hidden: true
+    images.console:
+      hidden: true
+    images.data:
+      title: OS image
+      choices:
+      - "carvicsforth/qemu-riscv64-ubuntu:22.04-1"
+      - "carvicsforth/qemu-riscv64-buildroot:00709af-1"
+    service.type:
+      hidden: true
+    service.port:
+      hidden: true
+    cpu.features:
+      hidden: true
+    cpu.count:
+      title: CPU count
+    append:
+      hidden: true

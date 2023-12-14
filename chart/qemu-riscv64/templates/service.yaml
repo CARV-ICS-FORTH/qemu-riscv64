@@ -5,7 +5,7 @@ metadata:
   labels:
     {{- include "qemu-riscv64.labels" . | nindent 4 }}
 spec:
-  type: {{ .Values.service.type }}
+  type: {{- if .Values.knot.enabled }} ClusterIP {{- else }} {{ .Values.service.type }} {{- end }}
   ports:
   - name: qemu-console
     port: {{ .Values.service.port }}

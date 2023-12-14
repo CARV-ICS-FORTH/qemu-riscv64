@@ -1,6 +1,6 @@
 apiVersion: v2
 name: qemu-riscv64
-description: Easy deployment of RISC-V QEMU instances on Kubernetes
+description: Deploy a RISC-V QEMU instance
 type: application
 version: 0.0.0
 sources:
