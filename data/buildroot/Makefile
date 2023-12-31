@@ -5,6 +5,9 @@ VERSION?=00709af-1
 IMAGE_NAME=$(REGISTRY_NAME)/qemu-riscv64-buildroot:$(VERSION)
 
 ARCH=$(shell uname -m)
+ifeq ($(ARCH),x86_64)
+ARCH=amd64
+endif
 ifeq ($(ARCH),amd64)
 OTHER_ARCH=arm64
 else

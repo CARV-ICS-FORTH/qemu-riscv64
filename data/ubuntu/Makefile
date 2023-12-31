@@ -5,6 +5,9 @@ VERSION?=22.04-1
 IMAGE_NAME=$(REGISTRY_NAME)/qemu-riscv64-ubuntu:$(VERSION)
 
 ARCH=$(shell uname -m)
+ifeq ($(ARCH),x86_64)
+ARCH=amd64
+endif
 ifeq ($(ARCH),amd64)
 OTHER_ARCH=arm64
 else
