@@ -1,9 +1,8 @@
 SHELL=/bin/bash
 
 REGISTRY_NAME?=carvicsforth
-# This was the original commit used by the build script (replaced with tag "2023.02" to make it faster to download)
-VERSION?=00709af-1
-IMAGE_NAME=$(REGISTRY_NAME)/qemu-riscv64-buildroot:$(VERSION)
+VERSION?=954aeb7-1
+IMAGE_NAME=$(REGISTRY_NAME)/qemu-riscv64-buildroot-rvv-0.7.1:$(VERSION)
 
 ARCH=$(shell uname -m)
 ifeq ($(ARCH),x86_64)
