@@ -1,4 +1,4 @@
-FROM ubuntu:22.04 AS builder
+FROM ubuntu:23.10 AS builder
 
 RUN apt-get update && \
     apt-get install -y build-essential git python3 pkg-config libglib2.0-dev libpixman-1-dev && \
@@ -16,10 +16,10 @@ WORKDIR /root
 COPY . /root/
 RUN ./build.sh
 
-FROM ubuntu:22.04
+FROM ubuntu:23.10
 
 RUN apt-get update && \
-    apt-get install -y libglib2.0-0 libpixman-1-0 && \
+    apt-get install -y libglib2.0-0 libpixman-1-0 passt && \
     apt-get clean \
     && rm -rf \
         /var/lib/apt/lists/* \

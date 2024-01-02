@@ -53,7 +53,7 @@ helm install myvm ./chart/qemu-riscv64 \
 ## Architecture
 
 We use two basic containers for each VM:
-* The `launcher` contains the QEMU binary. A script starts QEMU automatically when it runs, using environmental variables to define the number of CPUs, the memory, and other parameters. QEMU is configured to serve its console via telnet at local port 10023.
+* The `launcher` contains the QEMU binary. A script starts QEMU automatically when it runs, using environmental variables to define the number of CPUs, the memory, and other parameters. QEMU is configured to serve its console via telnet at local port 10023. Networking is handled by [passt](https://passt.top/passt/about/), so the VM gets the same IP as the pod and can communicate with other VMs in the same Kubernetes environment.
 * The `console` is based on [gotty](https://github.com/sorenisanerd/gotty). Gotty runs a local command (in this case `telnet`), captures input and output streams, exposes them via websockets, and then offers a web-based terminal emulator ([xterm.js](https://github.com/xtermjs/xterm.js)) for the user to interact with what has been run.
 
 The root filesystem used by QEMU is also packaged up in a container image (which we call `data`), using a similar method to [KubeVirt](https://github.com/kubevirt/kubevirt). Before each VM starts, the `data` container copies its contents to an ephemeral volume that is shared with the `launcher`. As `data` contains only VM-specific files (it can optionally also hold a custom kernel and BIOS), we copy over a [BusyBox](https://busybox.net) binary before it starts, so it can run `cp` to populate the shared volume.

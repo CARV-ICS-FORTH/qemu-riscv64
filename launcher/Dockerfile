@@ -1,7 +1,7 @@
 FROM ubuntu:23.10
 
 RUN apt-get update && \
-    apt-get install -y qemu-system-misc opensbi u-boot-qemu qemu-utils && \
+    apt-get install -y qemu-system-misc opensbi u-boot-qemu qemu-utils passt && \
     apt-get clean \
     && rm -rf \
         /var/lib/apt/lists/* \

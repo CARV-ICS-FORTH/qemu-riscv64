@@ -16,6 +16,7 @@ QEMU_RISCV_SYSTEM=$QEMU_PATH/build/riscv64-softmmu/qemu-system-riscv64
 
 git clone --depth 1 --branch $QEMU_COMMIT_ID $QEMU_REPOSITORY
 cd $QEMU_PATH
+git apply $TOP_PATH/0001-net-Allow-also-UNIX-domain-sockets-to-be-used-as-net.patch
 #following line fixes an error that occures under certain env conditions
 sed -i 's/nopie/no\-pie/' configure
 mkdir build
