@@ -1,6 +1,6 @@
 # RISC-V QEMU in Kubernetes
 
-This project provides an easy method for deploying RISC-V [QEMU](https://www.qemu.org) instances in [Kubernetes](https://kubernetes.io). Using [Helm](https://helm.sh), you can quickly configure and deploy a RISC-V VM and access its console through a web interface. The Helm chart is compatible with [Knot](https://github.com/CARV-ICS-FORTH/knot).
+This project provides an easy method for deploying RISC-V [QEMU](https://www.qemu.org) instances in [Kubernetes](https://kubernetes.io). Using [Helm](https://helm.sh), you can quickly configure and deploy a RISC-V VM and access its console through a web interface. The Helm chart is compatible with [Knot](https://github.com/CARV-ICS-FORTH/knot). Pre-compiled configurations support RVV 1.0 and RVV 0.7.1.
 
 ## Deploying
 
@@ -21,26 +21,28 @@ If running Kubernetes with [minikube](https://minikube.sigs.k8s.io/), the above 
 
 The table below lists all available options (the current version is set in the `Makefile`):
 
-| Variable          | Default                                            | Notes                                                |
-|-------------------|----------------------------------------------------|------------------------------------------------------|
-| `images.launcher` | `carvicsforth/qemu-riscv64-launcher:<version>`     |                                                      |
-| `images.console`  | `carvicsforth/qemu-riscv64-console:<version>`      |                                                      |
-| `images.data`     | `carvicsforth/qemu-riscv64-ubuntu:22.04-1`         | Use for custom files, kernel, and BIOS               |
-| `service.type`    | `LoadBalancer`                                     |                                                      |
-| `service.port`    | `8080`                                             |                                                      |
-| `cpu.features`    |                                                    | Can be overriden by the `data` image                 |
-| `cpu.count`       | `2`                                                | Also sets resource request in deployment             |
-| `memory`          | `2048`                                             | Also sets resource request in deployment             |
-| `append`          |                                                    | Kernel options. Can be overriden by the `data` image |
+| Variable                | Default                                                  | Notes                                                |
+|-------------------------|----------------------------------------------------------|------------------------------------------------------|
+| `images.launcher`       | `carvicsforth/qemu-riscv64-launcher:<version>`           | Default launcher, supporting RVV 1.0                 |
+| `images.launcherRVV071` | `carvicsforth/qemu-riscv64-launcher-rvv-0.7.1:<version>` | Custom launcher, supporting RVV 0.7.1                |
+| `images.console`        | `carvicsforth/qemu-riscv64-console:<version>`            |                                                      |
+| `images.data`           | `carvicsforth/qemu-riscv64-ubuntu:22.04-1`               | Use for custom files, kernel, and BIOS               |
+| `service.type`          | `LoadBalancer`                                           |                                                      |
+| `service.port`          | `8080`                                                   |                                                      |
+| `cpu.features`          |                                                          | Can be overriden by the `data` image                 |
+| `cpu.count`             | `2`                                                      | Also sets resource request in deployment             |
+| `memory`                | `2048`                                                   | Also sets resource request in deployment             |
+| `append`                |                                                          | Kernel options. Can be overriden by the `data` image |
 
 Available `data` images:
 
-| Image                                           | Notes                                              |
-|-------------------------------------------------|----------------------------------------------------|
-| `carvicsforth/qemu-riscv64-ubuntu:22.04-1`      | Standard Ubuntu image (login: `ubuntu`/`ubuntu`)   |
-| `carvicsforth/qemu-riscv64-buildroot:00709af-1` | Custom built image, uses RVV1.0.0 (login: `root`/) |
+| Image                                                     | Notes                                               |
+|-----------------------------------------------------------|-----------------------------------------------------|
+| `carvicsforth/qemu-riscv64-ubuntu:22.04-1`                | Standard Ubuntu image (login: `ubuntu`/`ubuntu`)    |
+| `carvicsforth/qemu-riscv64-buildroot:00709af-1`           | Custom built image, uses RVV 1.0 (login: `root`/)   |
+| `carvicsforth/qemu-riscv64-buildroot-rvv-0.7.1:954aeb7-1` | Custom built image, uses RVV 0.7.1 (login: `root`/) |
 
-To images set the CPU specifications they need, as well as custom kernel options.
+To images set the CPU specifications they need, as well as custom kernel options. If the image name contains `rvv-0.7.1`, the chart automatically switches to the respective launcher.
 To run the custom [Buildroot](https://buildroot.org) image:
 
 ```bash

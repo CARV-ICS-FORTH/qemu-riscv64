@@ -41,7 +41,11 @@ spec:
           name: data
       containers:
       - name: qemu-launcher
+        {{- if contains "rvv-0.7.1" .Values.images.data }}
+        image: {{ .Values.images.launcherRVV071 }}
+        {{- else }}
         image: {{ .Values.images.launcher }}
+        {{- end }}
         imagePullPolicy: IfNotPresent
         resources:
           requests:

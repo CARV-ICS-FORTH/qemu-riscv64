@@ -1,5 +1,6 @@
 images:
   launcher: carvicsforth/qemu-riscv64-launcher:1.1.0
+  launcherRVV071: carvicsforth/qemu-riscv64-launcher-rvv-0.7.1:1.1.0
   console: carvicsforth/qemu-riscv64-console:1.1.0
   data: carvicsforth/qemu-riscv64-ubuntu:22.04-1
 
@@ -26,6 +27,7 @@ knot:
       choices:
       - "carvicsforth/qemu-riscv64-ubuntu:22.04-1"
       - "carvicsforth/qemu-riscv64-buildroot:00709af-1"
+      - "carvicsforth/qemu-riscv64-buildroot-rvv-0.7.1:954aeb7-1"
     service.type:
       hidden: true
     service.port:
