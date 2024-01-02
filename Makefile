@@ -1,7 +1,7 @@
 SHELL=/bin/bash
 
 REGISTRY_NAME?=carvicsforth
-VERSION?=1.1.0
+VERSION?=1.2.0
 
 .PHONY: all launcher launcher-rvv-0.7.1 console data launcher-push launcher-rvv-0.7.1-push console-push data-push containers containers-push
 

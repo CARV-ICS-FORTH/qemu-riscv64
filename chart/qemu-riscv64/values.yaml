@@ -1,7 +1,7 @@
 images:
-  launcher: carvicsforth/qemu-riscv64-launcher:1.1.0
-  launcherRVV071: carvicsforth/qemu-riscv64-launcher-rvv-0.7.1:1.1.0
-  console: carvicsforth/qemu-riscv64-console:1.1.0
+  launcher: carvicsforth/qemu-riscv64-launcher:1.2.0
+  launcherRVV071: carvicsforth/qemu-riscv64-launcher-rvv-0.7.1:1.2.0
+  console: carvicsforth/qemu-riscv64-console:1.2.0
   data: carvicsforth/qemu-riscv64-ubuntu:22.04-1
 
 service:
